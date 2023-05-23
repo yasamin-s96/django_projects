@@ -1,23 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponseNotFound, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponse, HttpRequest
 from django.core.files.storage import default_storage
 from . import util
-from markdown2 import Markdown
 
-
-markdowner = Markdown()
-
-template = '''{% extends "encyclopedia/layout.html" %}
-
-{% block title %}
-    {{ title }}
-{% endblock %}
-
-{% block body %}
-
-    {{ content | safe }}
-
-{% endblock %}'''
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -25,22 +10,22 @@ def index(request):
     })
 
 
-
 def entry(request, title):
-
-    for item in util.list_entries():
-        if title.lower() == item.lower():
-            requested_entry = util.get_entry(title)
-            html = markdowner.convert(requested_entry)
-            util.write_html(title, template)        
-            return render(request, f"encyclopedia/{title}.html", {"title":item, "content":html})
     
+    func_output = util.create_template(title)
+    if func_output:
+        return render(request, f"encyclopedia/{func_output['filename']}.html", {"title":func_output["html_title"], "content":func_output["content"]})
+    # for item in util.list_entries():
+    #     if title.lower() == item.lower():
+    #         requested_entry = util.get_entry(title)
+    #         html = markdowner.convert(requested_entry)
+    #         util.write_html(title, template)            
     return HttpResponseNotFound()
 
 
-def search(request, user_input):
+def search(request):
     
-    get_entry_result = entry(request, user_input)
+    get_entry_result = entry(request, request.GET["q"])
     
     if not isinstance(get_entry_result, HttpResponse):
         return get_entry_result()
