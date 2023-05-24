@@ -1,0 +1,15 @@
+{% extends 'encyclopedia/layout.html' %}
+
+{% block body %}
+<form action="/new" method="post">
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" class="form-control" name="title">
+    </div>
+    <div class="form-group">
+      <label>Content:</label>
+      <textarea class="form-control" rows="5" name="content"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+{% endblock %}

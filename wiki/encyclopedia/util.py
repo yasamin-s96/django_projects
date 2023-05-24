@@ -51,21 +51,17 @@ def get_entry(title):
         return None
 
 def write_html(title, content):
-    
     filename = f"templates/encyclopedia/{title}.html"
     if default_storage.exists(filename):
         default_storage.delete(filename)
     default_storage.save(filename, ContentFile(content))
-    
 
 def create_template(user_input):
-    
     entries = list_entries()
     for entry in entries:
-        if entry == user_input.lower():
-            requested_entry = get_entry(entry)
-            html = markdowner.convert(requested_entry)
-            write_html(entry, template)    
+        if entry.lower() == user_input.lower():
+            html = markdowner.convert(get_entry(entry))
+            write_html(entry, template)
             return {"filename":entry, "html_title":entry, "content":html}
     return None
     
