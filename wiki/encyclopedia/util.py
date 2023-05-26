@@ -2,21 +2,8 @@ import re
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from markdown2 import Markdown
 
-markdowner = Markdown()
 
-template = '''{% extends "encyclopedia/layout.html" %}
-
-{% block title %}
-    {{ title }}
-{% endblock %}
-
-{% block body %}
-
-    {{ content | safe }}
-
-{% endblock %}'''
 
 def list_entries():
     """
@@ -50,18 +37,3 @@ def get_entry(title):
     except FileNotFoundError:
         return None
 
-def write_html(title, content):
-    filename = f"templates/encyclopedia/{title}.html"
-    if default_storage.exists(filename):
-        default_storage.delete(filename)
-    default_storage.save(filename, ContentFile(content))
-
-def create_template(user_input):
-    entries = list_entries()
-    for entry in entries:
-        if entry.lower() == user_input.lower():
-            html = markdowner.convert(get_entry(entry))
-            write_html(entry, template)
-            return {"filename":entry, "html_title":entry, "content":html}
-    return None
-    
