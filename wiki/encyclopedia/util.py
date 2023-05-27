@@ -37,3 +37,14 @@ def get_entry(title):
     except FileNotFoundError:
         return None
 
+
+def compare_input_entry(user_input):
+    """
+    check if the user entered an existing title of an entry case insensitively.
+    Returns the name of the entry if found else returns None.
+    """
+    entries = list_entries()
+    for item in entries:
+        if user_input.lower() in item.lower():
+            return item
+    return None
