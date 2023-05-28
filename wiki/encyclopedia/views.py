@@ -5,7 +5,6 @@ from django.contrib import messages
 from markdown2 import Markdown
 import random
 from . import util
-import re
 
 
 markdowner = Markdown()
