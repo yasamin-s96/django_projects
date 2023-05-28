@@ -45,6 +45,6 @@ def compare_input_entry(user_input):
     """
     entries = list_entries()
     for item in entries:
-        if user_input.lower() in item.lower():
+        if user_input.lower() == item.lower():
             return item
     return None

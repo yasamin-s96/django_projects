@@ -8,6 +8,7 @@
 
     {{ content | safe }}
     <form action="{% url 'new' %}">
+        <input type="hidden" name="title" value="{{ title }}">
         <input type="submit" class="btn btn-primary" name="edit" value="Edit">
     </form>
 

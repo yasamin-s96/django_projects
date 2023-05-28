@@ -26,7 +26,7 @@ def entry(request, title):
         return HttpResponseNotFound()
 
     if request.GET.get("edit"):
-        return render(request, "encyclopedia/new_page.html", {"title":entry_found, "content": util.get_entry(entry_found)})
+        return render(request, "encyclopedia/new_page.html", {"title":entry_found})
 
 def search(request):
     user_input = request.GET['q']
@@ -36,21 +36,20 @@ def search(request):
     
     else:
         results = []
-        if entry_found := util.compare_input_entry(user_input):
-                results.append(entry_found)
+        entries = util.list_entries()
+        for item in entries:
+            if user_input.lower() in item.lower():
+                results.append(item)
         return render(request, "encyclopedia/search_results.html", {"found":results})
 
 def new_page(request):
+    entry_title = request.GET.get("title")
+    if request.method == "GET" and entry_title:
+        return render(request, "encyclopedia/new_page.html", {"being_edited":True, "title": entry_title, "content": util.get_entry(entry_title)})
 
-    # if request.method == "GET" and request.GET.get("edit"):
-    #     pre_url = request.META.get('HTTP_REFERER')
-    #     result = re.search(r".+/wiki/(\w+)", pre_url)
-    #     if entry_found := util.compare_input_entry(result.group(1)):
-    #         return render(request, "encyclopedia/new_page.html", {"result":result, "title": entry_found, "content": util.get_entry(entry_found)})
-    #     else:
-    #         return render(request, "encyclopedia/new_page.html")
+    if request.method == "GET":
+        return render(request, "encyclopedia/new_page.html")
         
-    # else:
     if request.method == "POST":
         title = request.POST['title']
         if request.POST.get("save"):
