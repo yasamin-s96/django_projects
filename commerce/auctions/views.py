@@ -4,14 +4,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from django.contrib.auth.decorators import login_required
 from .models import *
 
 class ListingForm(forms.ModelForm):
     image_url = forms.URLField(required=False)
     class Meta:
         model = Listing
-        fields = ["title", "description", "starting_bid", "category", "image_url"]
-
+        fields = ["title", "description", "starting_bid","categories", "image_url"]
+    def __init__(self, *args, **kwargs):
+        super(ListingForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
 
 
 def index(request):
@@ -69,6 +73,23 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-# @login_required
+@login_required
 def create_listing(request):
-    return render(request, "auctions/create_listing.html", {"form": ListingForm()})
+    if request.method == "POST":
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            new_listing = Listing()
+            new_listing.creator = request.user
+            new_listing.title = form.cleaned_data["title"]
+            new_listing.description = form.cleaned_data["description"]
+            new_listing.starting_bid = form.cleaned_data["starting_bid"]
+            new_listing.save()
+            # new_listing.categories.add(form.cleaned_data["category"])
+            new_listing.image_url = form.cleaned_data["image_url"]
+            
+            return render(request, "auctions/create_listing.html", {"form": ListingForm(), "status":True})
+
+        else:
+            return render(request, "auctions/create_listing.html", {"form": form, "status":False})
+    else:      
+        return render(request, "auctions/create_listing.html", {"form": ListingForm(), "status": None})
