@@ -1,7 +1,27 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <div class="row">
+        <div class="col-md-10">
+            {% if listings %}
+                {% for listing in listings %}
+                    <div class="row">
+                        {% if listing.image_url %}
+                            <div class="col-md-4">
+                                <img class="img-fluid mr-3" src="{{ listing.image_url }}" class="mr-2">
+                            </div>
+                        {% endif %}
+                        <div class="col-md-8 my-auto">
+                            <h3 class="text-capitalize">{{ listing.title }}</h3>
+                            <p class="fw-bold">Price: ${{ listing.starting_bid }}</p>
+                            <p>{{ listing.description }}</p>
+                            <small class="text-muted">Created: {{ listing.created_at }}</small>
+                            <a class="btn btn-primary d-block" href="{% url 'listing details' listing.id %}">View details</a> 
+                        </div>                        
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
-    TODO
 {% endblock %}

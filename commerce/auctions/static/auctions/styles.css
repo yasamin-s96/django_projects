@@ -2,6 +2,10 @@ body {
     padding: 10px;
 }
 
+a {
+    text-decoration: none;
+}
+
 #listing-form {
     width: 50%;
     margin-left: 1rem;
@@ -17,4 +21,8 @@ body {
 
 #id_description {
     height: 100px;
+}
+
+.row {
+    margin-bottom: 2rem;
 }

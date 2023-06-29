@@ -1,0 +1,67 @@
+{% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md">
+            <img class="img-fluid" src="{{ listing.image_url }}">
+        </div>
+        <div class="col-md-6 my-auto">
+            <div class="d-flex justify-content-between">
+                <h2 class="text-capitalize">{{ listing.title }}</h2>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'listing details' listing.id %}" method="post">
+                        {% csrf_token %}
+                        {% if listing_exists %}
+                            <input class="btn btn-secondary btn-sm rounded-pill" type="submit" name="remove_from_watchlist" value="Remove from watchlist">
+                        {% else %}
+                            <input class="btn btn-secondary btn-sm rounded-pill" type="submit" name="add_to_watchlist" value="Watchlist">
+                        {% endif %}
+                        {% if close and listing.closed == False %}
+                            <input class="btn btn-primary btn-sm rounded-pill" type="submit" name="close_auction" value="Close auction">
+                        {% endif %}
+                            
+                    </form>
+                {% endif %}
+            </div>
+            <p class="fw-bold">Price: ${{ listing.starting_bid }}</p>
+            <p>{{ listing.description }}</p>
+        </div>
+        <div class="col-md my-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Details</h5>
+                    <p class="card-text"><strong>Listed by:</strong> {{ listing.creator.username }}</p>
+                    <p class="card-text"><strong>Date Listed:</strong> {{ listing.created_at }}</p>
+                    <p class="card-text">
+                        <strong>Category:</strong> 
+                        {% if categories %}
+                            {% for category in categories %}
+                                <a href="#">{{ category }}</a>
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <strong>Status:</strong> 
+                        {% if listing.closed %}
+                            Closed
+                        {% else %}
+                            Active
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if user.is_authenticated and listing.closed is not True %}
+        <div class="row">
+            <div class="col-md-6 d-flex">
+                <form action="{% url 'listing details' listing.id %}" method="post">
+                    {% csrf_token %}
+                    {{ bid|crispy }}
+                    <input class="btn btn-primary" name="place_bid" type="submit" value="Place Bid">
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
