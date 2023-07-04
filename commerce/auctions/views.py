@@ -98,15 +98,13 @@ def listing_details(request, listing_id):
     user = request.user
     listing = Listing.objects.get(pk=listing_id)
     context = {"listing":listing, "categories":listing.categories.all()}
-
-    if user.is_authenticated:
-        if listing.creator == user and listing.closed == False:
-            context["close"] = True
-        bid_form = BidForm(listing_id=listing_id)
-        context["bid"] = bid_form
-        # check if the listing already exists on user's watchlist:
-        if user.watchlist.listings.filter(pk=listing_id).exists():
-            context["listing_exists"] = True
+    comment_form = CommentForm()
+    bid_form = BidForm(listing_id=listing_id)
+    context["comment_form"] = comment_form
+    context["bid_form"] = bid_form
+    # check if the listing already exists on user's watchlist:
+    if user.watchlist.listings.filter(pk=listing_id).exists():
+        context["listing_exists"] = True
 
     if request.method == "GET":
         return render(request, "auctions/listing_details.html", context)
@@ -144,6 +142,15 @@ def listing_details(request, listing_id):
         if request.POST.get("remove_from_watchlist"):
             user.watchlist.listings.remove(listing)
             messages.success(request, "Successfully removed from watchlist!")
+
+        if request.POST.get("post_comment"):
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                new_comment = comment_form.save(commit=False)
+                new_comment.user = user
+                new_comment.listing = listing
+                comment_form.save()
+
         return redirect(reverse("listing details", kwargs={"listing_id":listing_id}))
 
 

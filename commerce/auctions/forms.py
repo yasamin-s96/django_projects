@@ -1,5 +1,5 @@
 from django import forms
-from .models import Category, Listing, Bid
+from .models import Category, Listing, Bid, Comment
 from django.core.exceptions import ValidationError
 
 
@@ -35,4 +35,8 @@ class BidForm(forms.ModelForm):
         
         return amount
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]
 
