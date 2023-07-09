@@ -97,16 +97,20 @@ class ActiveListingsView(ListView):
 def listing_details(request, listing_id):
     user = request.user
     listing = Listing.objects.get(pk=listing_id)
-    context = {"listing":listing, "categories":listing.categories.all()}
-    comment_form = CommentForm()
-    bid_form = BidForm(listing_id=listing_id)
-    context["comment_form"] = comment_form
-    context["bid_form"] = bid_form
-    # check if the listing already exists on user's watchlist:
-    if user.watchlist.listings.filter(pk=listing_id).exists():
-        context["listing_exists"] = True
+    context = {
+        "listing":listing,
+        "categories":listing.categories.all(),
+        "comment_form":CommentForm(),
+        "bid_form":BidForm(listing_id=listing_id),
+        "comments":listing.comments.all().order_by("-commented_at"),
+        }
+    if user.is_authenticated:
+        context["listing_exists"] = user.watchlist.listings.filter(pk=listing_id).exists()
 
     if request.method == "GET":
+        if listing.closed is True:
+            if listing.winner == user:
+                messages.warning(request, "You have won this auction!")
         return render(request, "auctions/listing_details.html", context)
 
     else:
@@ -137,11 +141,9 @@ def listing_details(request, listing_id):
         if request.POST.get("add_to_watchlist"):
             user.watchlist.listings.add(listing)
             user.save()
-            messages.success(request, "Successfully added to watchlist!")
              
         if request.POST.get("remove_from_watchlist"):
             user.watchlist.listings.remove(listing)
-            messages.success(request, "Successfully removed from watchlist!")
 
         if request.POST.get("post_comment"):
             comment_form = CommentForm(request.POST)
@@ -153,8 +155,16 @@ def listing_details(request, listing_id):
 
         return redirect(reverse("listing details", kwargs={"listing_id":listing_id}))
 
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {"watchlist":request.user.watchlist.listings.all()})
 
+def categories_list(request):
+    return render(request, "auctions/categories.html", {"categories":Category.objects.all()})
 
+def category(request, category_id):
+    current_category = Category.objects.get(pk=category_id)
+    listings = Listing.objects.filter(categories=current_category)
+    return render(request, "auctions/category.html", {"related_listings":listings})
         
 
 

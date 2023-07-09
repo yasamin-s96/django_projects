@@ -1,27 +1,23 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            {% if listings %}
-                {% for listing in listings %}
-                    <div class="row bg-light">
-                        {% if listing.image_url %}
-                            <div class="col-md-4">
-                                <img class="img-fluid mr-3" src="{{ listing.image_url }}" class="mr-2">
-                            </div>
-                        {% endif %}
-                        <div class="col-md-8 my-auto">
-                            <h3 class="text-capitalize">{{ listing.title }}</h3>
-                            <p class="fw-bold">Price: ${{ listing.starting_bid }}</p>
-                            <p>{{ listing.description }}</p>
-                            <small class="text-muted">Created: {{ listing.created_at }}</small>
-                            <a class="btn btn-primary d-block" href="{% url 'listing details' listing.id %}">View details</a> 
-                        </div>                        
+    {% if listings %}
+        <div class="container-fluid d-flex flex-column h-100">
+            {% for listing in listings %}            
+            <div class="row flex-grow-1 justify-content-center{% if forloop.counter < listings|length %} border-bottom {% endif %} mb-1 py-1">   
+                <div class="col-md-3">                                
+                    <img class="img-thumbnail" src="{% if listing.image_url %} {{ listing.image_url }} {% else %} https://coloradovocal.org/wp-content/themes/barberry/images/placeholder.jpg {% endif %}">
+                </div>                            
+                <div class="col-md-9 d-flex flex-column justify-content-between pt-1">
+                    <div>
+                        <h5 class="card-title text-capitalize">{{ listing.title }}</h5>
+                        <p class="card-text fw-bold">Price: ${{ listing.starting_bid }}</p>
+                        <p>{{ listing.description }}</p>
                     </div>
-                {% endfor %}
-            {% endif %}
+                    <a href="{% url 'listing details' listing.id %}" class="btn btn-warning w-10 align-self-end">View details</a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-    </div>
-
+    {% endif %}
 {% endblock %}

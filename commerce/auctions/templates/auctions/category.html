@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% for listing in related_listings %}            
+    <div class="row justify-content-center {% if forloop.counter < related_listings|length %} border-bottom {% endif %} pb-2 mb-1">   
+        <div class="col-md-3">                                
+            <img class="img-thumbnail" src="{% if listing.image_url %} {{ listing.image_url }} {% else %} https://coloradovocal.org/wp-content/themes/barberry/images/placeholder.jpg {% endif %}">
+        </div>                            
+        <div class="col-md-9 d-flex flex-column justify-content-between py-1">
+            <div>
+                <h5 class="card-title text-capitalize">{{ listing.title }}</h5>
+                <p class="card-text fw-bold">Price: ${{ listing.starting_bid }}</p>
+                <p>{{ listing.description }}</p>
+            </div>
+            <a href="{% url 'listing details' listing.id %}" class="btn btn-warning w-10 align-self-end">View details</a>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

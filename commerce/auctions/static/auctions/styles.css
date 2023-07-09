@@ -6,23 +6,6 @@ a {
     text-decoration: none;
 }
 
-#listing-form {
-    width: 50%;
-    margin-left: 1rem;
-}
-
-#id_title,
-#id_starting_bid,
-#id_image_url,
-#id_categories,
-#id_description {
-    width: 50%;
-}
-
-#id_description {
-    height: 100px;
-}
-
 .row {
     margin-bottom: 2rem;
 }

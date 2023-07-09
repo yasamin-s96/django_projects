@@ -1,12 +1,11 @@
 {% extends "auctions/layout.html" %}
-{% load crispy_forms_tags %}
 {% load widget_tweaks %}
 
 {% block body %}
     <div class="container bg-custom">
         <div class="row justify-content-center">
-            <div class="col-md-9 p-4 bg-custom">
-                <img src="{{ listing.image_url }}" alt="books" class="d-block mx-auto w-75 mb-2 h-50">
+            <div class="col-md-9 p-3">
+                <img src="{% if listing.image_url %} {{ listing.image_url }} {% else %} https://coloradovocal.org/wp-content/themes/barberry/images/placeholder.jpg {% endif %}" class="img-thumbnail d-block mx-auto w-75 mb-2 h-50">
                 <div class="mb-4">
                     <h2 class="text-capitalize">{{ listing.title }}</h2>
                     <p class="fw-bold">Price: ${{ listing.starting_bid }}</p>
@@ -18,7 +17,7 @@
                         <li>Category:
                             {% if categories %}
                                 {% for category in categories %}
-                                    <a href="#">{{ category }}</a>
+                                    <a href="{% url 'category' category.id %}">{{ category }}</a>{% if forloop.counter < categories|length %}, {% endif %}
                                 {% endfor %}
                             {% endif %}
                         </li>
@@ -30,30 +29,32 @@
                             {% endif %}
                         </li>
                     </ul>
-                </div>                
+                </div> 
+                <h5>Reviews</h5>               
                 {% if user.is_authenticated %}                                    
-                    <form action="{% url 'listing details' listing.id %}" method="post">
+                    <form action="{% url 'listing details' listing.id %}" method="post" class="d-flex flex-column">
                         {% csrf_token %}
                         {{ comment_form.content|attr:"class:form-control mb-2"|attr:"placeholder:Leave a comment here"|attr:"rows:5" }}
-                        <input type="submit" class="btn btn-warning" value="Post" name="post_comment">
+                        <input type="submit" class="btn btn-warning align-self-end" value="Post" name="post_comment">
                     </form>                    
                 {% endif %}
                 <div>
-                    <h5>Reviews</h5>
                     {% if comments %}
                         {% for comment in comments %}
-                            <div class="d-flex">
-                                <p>{{ comment.user }}</p>
-                                <small class="text-muted">{{ comment.commented_at }}</small>
+                            <div class="d-flex flex-column justify-content-between mt-4 border-top pt-1">
+                                <div class="d-flex justify-content-between">
+                                    <p class="fw-bold pe-2 border-end border-2 text-capitalize">{{ comment.user }}</p>
+                                    <small class="text-muted">{{ comment.commented_at }}</small>
+                                </div>
                                 <p>{{ comment.content }}</p>
                             </div>
                         {% endfor %}
                     {% endif %}
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card bg-custom m-3 p-3">
-                    {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
+                <div class="col-md-3">
+                    <div class="card bg-custom m-3 p-3">
                         <form action="{% url 'listing details' listing.id %}" method="post">
                             {% csrf_token %}
                             {% if listing_exists %}
@@ -67,16 +68,16 @@
                             <form action="{% url 'listing details' listing.id %}" method="post">
                                 {% csrf_token %}
                                 {% if listing.creator != user %}
-                                    {{ bid_form|crispy }}
+                                    {{ bid_form.amount|attr:"class:form-control mb-2"|attr:"placeholder:Amount" }}
                                     <input class="btn btn-warning w-100" name="place_bid" type="submit" value="Place Bid">
                                 {% else %}
                                     <input class="btn btn-warning w-100" type="submit" name="close_auction" value="Close Auction">
                                 {% endif %}
                             </form>
                         {% endif %}
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
 
     </div>

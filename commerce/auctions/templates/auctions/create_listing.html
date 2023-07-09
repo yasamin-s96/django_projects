@@ -1,10 +1,40 @@
 {% extends "auctions/layout.html" %}
-{% load crispy_forms_tags %}
+{% load widget_tweaks %}
 
 {% block body %}
-    <form action="{% url 'create listing' %}" method="post" id="listing-form">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    <div class="w-50 mx-auto p-2">
+        <form action="{% url 'create listing' %}" method="post" id="listing-form">
+            {% csrf_token %}
+            <div class="mb-2">
+                <label class="mb-1 fw-medium" for="{{ form.title.id_for_label }}">{{ form.title.label }}:</label>
+                {{ form.title|attr:"class: form-control mb-2" }}
+            </div>
+            <div class="mb-2">
+                <label class="mb-1 fw-medium" for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
+                {{ form.description|attr:"class: form-control mb-2"|attr:"rows:3" }}
+            </div>
+            <div class="mb-2">
+                <label class="text-capitalize mb-1 fw-medium" for="{{ form.starting_bid.id_for_label }}">{{ form.starting_bid.label }}:</label>
+                {{ form.starting_bid|attr:"class: form-control mb-2" }}
+            </div>
+            <div class="mb-2">
+                <label class="d-block mb-1 fw-medium" for="{{ form.categories.id_for_label }}">{{ form.categories.label }}:</label>
+                {% for value, label in form.categories.field.widget.choices %}
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label" for="id_categories_{{ forloop.counter0 }}">
+                        <input type="checkbox" name="categories" value="{{ value }}" id="id_categories_{{ forloop.counter0 }}">{{ label }}
+                    </label>
+                  </div>
+                {% endfor %}
+            </div>
+            <div class="mb-2">
+                <label class="mb-1 fw-medium" for="{{ form.image_url.id_for_label }}">{{ form.image_url.label }}</label>
+                {{ form.image_url|attr:"class:form-control mb-2" }}
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100">Create</button>
+
+        </form>
+    </div>
+
 {% endblock %}
