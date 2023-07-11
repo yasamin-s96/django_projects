@@ -1,6 +1,7 @@
 {% extends "auctions/layout.html" %}
 {% load widget_tweaks %}
 
+{% block title %}Create Listing{% endblock %}
 {% block body %}
     <div class="w-50 mx-auto p-2">
         <form action="{% url 'create listing' %}" method="post" id="listing-form">

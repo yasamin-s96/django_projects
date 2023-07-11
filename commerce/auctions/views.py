@@ -122,7 +122,7 @@ def listing_details(request, listing_id):
                 bid.listing = listing
                 bid_form.save()
             else:
-                context["bid"] = bid_form
+                context["bid_form"] = bid_form
                 return render(request, "auctions/listing_details.html", context)
 
         if request.POST.get("close_auction"):
@@ -164,7 +164,7 @@ def categories_list(request):
 def category(request, category_id):
     current_category = Category.objects.get(pk=category_id)
     listings = Listing.objects.filter(categories=current_category)
-    return render(request, "auctions/category.html", {"related_listings":listings})
+    return render(request, "auctions/category.html", {"related_listings":listings, "category":current_category})
         
 
 

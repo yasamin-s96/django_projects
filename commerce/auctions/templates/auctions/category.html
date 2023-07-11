@@ -1,5 +1,5 @@
 {% extends "auctions/layout.html" %}
-
+{% block title %}{{ category }} Category{% endblock %}
 {% block body %}
     {% for listing in related_listings %}            
     <div class="row justify-content-center {% if forloop.counter < related_listings|length %} border-bottom {% endif %} pb-2 mb-1">   

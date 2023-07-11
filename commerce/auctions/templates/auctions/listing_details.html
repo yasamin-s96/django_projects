@@ -1,6 +1,5 @@
 {% extends "auctions/layout.html" %}
 {% load widget_tweaks %}
-
 {% block body %}
     <div class="container bg-custom">
         <div class="row justify-content-center">
@@ -32,7 +31,7 @@
                 </div> 
                 <h5>Reviews</h5>               
                 {% if user.is_authenticated %}                                    
-                    <form action="{% url 'listing details' listing.id %}" method="post" class="d-flex flex-column">
+                    <form action="{% url 'listing details' listing.id %}" method="post" class="d-flex flex-column mb-4">
                         {% csrf_token %}
                         {{ comment_form.content|attr:"class:form-control mb-2"|attr:"placeholder:Leave a comment here"|attr:"rows:5" }}
                         <input type="submit" class="btn btn-warning align-self-end" value="Post" name="post_comment">
@@ -41,7 +40,7 @@
                 <div>
                     {% if comments %}
                         {% for comment in comments %}
-                            <div class="d-flex flex-column justify-content-between mt-4 border-top pt-1">
+                            <div class="d-flex flex-column justify-content-between border-top pt-1">
                                 <div class="d-flex justify-content-between">
                                     <p class="fw-bold pe-2 border-end border-2 text-capitalize">{{ comment.user }}</p>
                                     <small class="text-muted">{{ comment.commented_at }}</small>
@@ -69,7 +68,12 @@
                                 {% csrf_token %}
                                 {% if listing.creator != user %}
                                     {{ bid_form.amount|attr:"class:form-control mb-2"|attr:"placeholder:Amount" }}
-                                    <input class="btn btn-warning w-100" name="place_bid" type="submit" value="Place Bid">
+                                    {% if bid_form.amount.errors %}
+                                        {% for error in bid_form.amount.errors %}
+                                            <p class="text-danger"><strong>{{ error|escape }}</strong></p>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <input class="btn btn-warning w-100" name="place_bid" type="submit" value="Place Bid">                                    
                                 {% else %}
                                     <input class="btn btn-warning w-100" type="submit" name="close_auction" value="Close Auction">
                                 {% endif %}
@@ -79,6 +83,5 @@
                 </div>
             {% endif %}
         </div>
-
     </div>
 {% endblock %}
